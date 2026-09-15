@@ -71,8 +71,7 @@ async function verifyY8Player(accessToken) {
 
     return {
       pid: player.pid,
-      name: player.name,
-      nickname: player.nickname
+      name: player.nickname
     };
 
   } catch (error) {
