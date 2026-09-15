@@ -59,6 +59,7 @@ async function verifyY8Player(accessToken) {
     }
 
     const player = await response.json();
+    console.log("Y8 PROFILE RESPONSE:", player);
 
     // Make sure this token belongs to our Y8 application
     if (player.client_id !== Y8_APP_ID) {
