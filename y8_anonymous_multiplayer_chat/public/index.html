@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Y8 Multiplayer Chat Test</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="game">
+    <header>
+      <div>
+        <h1>Multiplayer Chat</h1>
+        <p class="subtitle">Anonymous real-time test</p>
+      </div>
+      <div class="online"><span></span><b id="userCount">0</b> online</div>
+    </header>
+
+    <section id="messages" class="messages"></section>
+
+    <form id="chatForm" class="input-area">
+      <input id="messageInput" maxlength="200" autocomplete="off"
+             placeholder="Type a message..." />
+      <button type="submit">SEND</button>
+    </form>
+
+    <footer>
+      <span id="playerName">Connecting...</span>
+      <span>Socket.IO multiplayer test</span>
+    </footer>
+  </main>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="game.js"></script>
+</body>
+</html>

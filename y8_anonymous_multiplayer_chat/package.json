@@ -1,0 +1,13 @@
+{
+  "name": "y8-anonymous-multiplayer-chat",
+  "version": "1.0.0",
+  "description": "Tiny anonymous multiplayer chat test using Node.js and Socket.IO",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^5.1.0",
+    "socket.io": "^4.8.3"
+  }
+}
