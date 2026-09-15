@@ -59,22 +59,20 @@ async function verifyY8Player(accessToken) {
     }
 
     const player = await response.json();
-    console.log("Y8 PROFILE RESPONSE:", player);
 
-    // Make sure this token belongs to our Y8 application
+    console.log("=== Y8 PROFILE RESPONSE ===");
+    console.log(player);
+    console.log("===========================");
+
     if (player.client_id !== Y8_APP_ID) {
-
-      console.log(
-        "Y8 verification rejected: wrong client_id"
-      );
-
+      console.log("Y8 verification rejected: wrong client_id");
       return null;
     }
 
-    // We only trust the identity returned by Y8
     return {
       pid: player.pid,
-      name: player.name
+      name: player.name,
+      nickname: player.nickname
     };
 
   } catch (error) {
@@ -268,9 +266,11 @@ function broadcastUserCount() {
 
 server.listen(PORT, () => {
 
-  console.log(
-    `Y8 multiplayer server running on port ${PORT}`
-  );
+  console.log("=================================");
+  console.log("Y8 MULTIPLAYER SERVER v2.1");
+  console.log("Y8 authentication enabled");
+  console.log("Server running on port:", PORT);
+  console.log("=================================");
 
 });
 
