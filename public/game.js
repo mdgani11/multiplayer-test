@@ -2,19 +2,23 @@
 // Y8 + MULTIPLAYER CHAT
 // ============================================================
 
+
+// ============================================================
+// CONFIGURATION
+// ============================================================
+
 // Your Render multiplayer server
-const MULTIPLAYER_SERVER = "https://multiplayer-test-ucc4.onrender.com/";
+const MULTIPLAYER_SERVER =
+  "https://multiplayer-test-ucc4.onrender.com";
 
 
-// ============================================================
-// HTML ELEMENTS
-// ============================================================
+// Your Y8 App ID
+const Y8_APP_ID =
+  "6aa308ef85ecc2b67a13293d";
 
-const messages = document.getElementById("messages");
-const form = document.getElementById("chatForm");
-const input = document.getElementById("messageInput");
-const userCount = document.getElementById("userCount");
-const playerName = document.getElementById("playerName");
+// Your Y8 Game ID
+const Y8_GAME_ID =
+  "282777";
 
 
 // ============================================================
@@ -27,136 +31,302 @@ let currentUser = null;
 
 
 // ============================================================
-// START Y8 SDK
+// HTML ELEMENTS
+// ============================================================
+
+const messages =
+  document.getElementById("messages");
+
+const form =
+  document.getElementById("chatForm");
+
+const input =
+  document.getElementById("messageInput");
+
+const userCount =
+  document.getElementById("userCount");
+
+const playerName =
+  document.getElementById("playerName");
+
+const loginArea =
+  document.getElementById("loginArea");
+
+const loginButton =
+  document.getElementById("loginButton");
+
+
+// ============================================================
+// LOGIN BUTTON
+// ============================================================
+
+loginButton.addEventListener("click", () => {
+
+  console.log("Y8 Login button clicked");
+
+
+  // SDK must be ready
+  if (!y8Sdk) {
+
+    console.error(
+      "Y8 SDK is not ready yet."
+    );
+
+    addMessage(
+      "Y8 SDK is still loading. Please try again.",
+      "system"
+    );
+
+    return;
+  }
+
+
+  // IMPORTANT:
+  // login() is called directly from the click.
+  // Do not put await or other async code before this.
+  y8Sdk.login();
+
+});
+
+
+// ============================================================
+// Y8 SDK READY
 // ============================================================
 
 window.addEventListener(
   "y8sdk.ready",
   function () {
 
-    console.log("Y8 SDK ready");
+    console.log(
+      "Y8 SDK ready"
+    );
 
-    y8Sdk = y8.sdk();
+
+    // Create SDK object
+    y8Sdk =
+      y8.sdk();
+
+
+    // ========================================================
+    // Y8 APP CONFIG
+    // ========================================================
 
     const appConfig = {
-      appId: "6aa308ef85ecc2b67a13293d",
-      autoLogin: true
+
+      appId:
+        Y8_APP_ID,
+
+      autoLogin:
+        true
+
     };
 
-    // Ads are optional.
-    // Remove this section if this test does not use ads.
+
+    // ========================================================
+    // Y8 AD CONFIG
+    // ========================================================
+
     const adConfig = {
-      gameId: "282777",
-      preloadAdBreaks: "on",
-      sound: "on",
+
+      gameId:
+        Y8_GAME_ID,
+
+      preloadAdBreaks:
+        "on",
+
+      sound:
+        "on",
+
       onReady: () => {
-        console.log("Y8 ads ready");
+
+        console.log(
+          "Y8 ads ready"
+        );
+
       }
+
     };
 
-    y8Sdk.init(appConfig, adConfig);
+
+    // ========================================================
+    // INITIALIZE Y8 SDK
+    // ========================================================
+
+    y8Sdk.init(
+      appConfig,
+      adConfig
+    );
 
 
     // ========================================================
     // Y8 AUTHENTICATION
     // ========================================================
 
-    y8Sdk.onAuth((user, error) => {
-
-      if (error) {
-
-        console.error("Y8 authentication error:", error);
-
-        playerName.textContent = "Y8 Login Failed";
-
-        addMessage(
-          "Unable to authenticate with Y8.",
-          "system"
-        );
-
-        return;
-      }
-
-
-      // ------------------------------------------------------
-      // USER LOGGED IN
-      // ------------------------------------------------------
-
-      if (user) {
-
-        currentUser = user;
-
-        console.log("Y8 user:", user);
-
-        playerName.textContent =
-          `You are ${user.nickname}`;
-
-        addMessage(
-          `Logged in as ${user.nickname}`,
-          "system"
-        );
+    y8Sdk.onAuth(
+      (user, error) => {
 
 
         // ====================================================
-        // GET SECURE Y8 ACCESS TOKEN
+        // AUTHENTICATION ERROR
         // ====================================================
 
-        const accessToken = y8Sdk.getAccessToken();
-
-        if (!accessToken) {
+        if (error) {
 
           console.error(
-            "No Y8 access token available."
+            "Y8 authentication error:",
+            error
           );
 
+
+          playerName.textContent =
+            "Y8 Login Failed";
+
+
           addMessage(
-            "Y8 authentication token is not available.",
+            "Unable to authenticate with Y8.",
             "system"
           );
+
 
           return;
         }
 
 
-        console.log(
-          "Y8 access token received"
-        );
+        // ====================================================
+        // USER LOGGED IN
+        // ====================================================
+
+        if (user) {
+
+          console.log(
+            "Y8 user:",
+            user
+          );
+
+
+          currentUser =
+            user;
+
+
+          // --------------------------------------------------
+          // DISPLAY USER NAME
+          // --------------------------------------------------
+
+          playerName.textContent =
+            `You are ${user.nickname}`;
+
+
+          // --------------------------------------------------
+          // HIDE LOGIN
+          // --------------------------------------------------
+
+          loginArea.style.display =
+            "none";
+
+
+          // --------------------------------------------------
+          // SHOW LOGIN MESSAGE
+          // --------------------------------------------------
+
+          addMessage(
+            `Logged in as ${user.nickname}`,
+            "system"
+          );
+
+
+          // ==================================================
+          // GET SECURE ACCESS TOKEN
+          // ==================================================
+
+          const accessToken =
+            y8Sdk.getAccessToken();
+
+
+          if (!accessToken) {
+
+            console.error(
+              "No Y8 access token available."
+            );
+
+
+            addMessage(
+              "Y8 access token is not available.",
+              "system"
+            );
+
+
+            return;
+          }
+
+
+          console.log(
+            "Y8 access token received"
+          );
+
+
+          // ==================================================
+          // CONNECT TO MULTIPLAYER
+          // ==================================================
+
+          connectToMultiplayer(
+            accessToken
+          );
+
+        }
 
 
         // ====================================================
-        // CONNECT TO MULTIPLAYER SERVER
+        // USER NOT LOGGED IN
         // ====================================================
 
-        connectToMultiplayer(accessToken);
+        else {
 
-      } else {
+          console.log(
+            "No Y8 user is logged in."
+          );
 
-        // ----------------------------------------------------
-        // NOT LOGGED IN
-        // ----------------------------------------------------
 
-        playerName.textContent =
-          "Not logged in";
+          currentUser =
+            null;
 
-        addMessage(
-          "Please log in to Y8 to join the chat.",
-          "system"
-        );
+
+          playerName.textContent =
+            "Not logged in";
+
+
+          loginArea.style.display =
+            "block";
+
+
+          input.disabled =
+            true;
+
+
+          addMessage(
+            "Please log in to Y8 to join the chat.",
+            "system"
+          );
+
+        }
 
       }
-
-    });
+    );
 
   },
-  { once: true }
+  {
+    once: true
+  }
 );
 
 
 // ============================================================
-// HANDLE CASE WHERE SDK ALREADY LOADED
+// HANDLE SDK ALREADY LOADED
 // ============================================================
 
-if (window.y8 && window.y8.emitReadyEvent) {
+if (
+  window.y8 &&
+  window.y8.emitReadyEvent
+) {
 
   window.y8.emitReadyEvent();
 
@@ -164,158 +334,211 @@ if (window.y8 && window.y8.emitReadyEvent) {
 
 
 // ============================================================
-// CONNECT TO SOCKET.IO MULTIPLAYER SERVER
+// CONNECT TO MULTIPLAYER SERVER
 // ============================================================
 
-function connectToMultiplayer(accessToken) {
+function connectToMultiplayer(
+  accessToken
+) {
 
   console.log(
     "Connecting to multiplayer server..."
   );
 
 
-  // Prevent duplicate connections
+  // ----------------------------------------------------------
+  // Remove previous connection
+  // ----------------------------------------------------------
+
   if (socket) {
 
     socket.disconnect();
-    socket = null;
+
+    socket =
+      null;
 
   }
 
 
-  socket = io(MULTIPLAYER_SERVER, {
+  // ----------------------------------------------------------
+  // Create Socket.IO connection
+  // ----------------------------------------------------------
 
-    // Send the Y8 access token to our server
-    auth: {
-      accessToken: accessToken
-    }
+  socket =
+    io(
+      MULTIPLAYER_SERVER,
+      {
 
-  });
+        auth: {
 
+          accessToken:
+            accessToken
 
-  // ========================================================
-  // SOCKET CONNECTED
-  // ========================================================
+        }
 
-  socket.on("connect", () => {
-
-    console.log(
-      "Connected to multiplayer server:",
-      socket.id
+      }
     );
 
-    addMessage(
-      "Connected to multiplayer server.",
-      "system"
-    );
 
-    input.disabled = false;
+  // ==========================================================
+  // CONNECTED
+  // ==========================================================
 
-  });
+  socket.on(
+    "connect",
+    () => {
+
+      console.log(
+        "Connected to multiplayer server:",
+        socket.id
+      );
 
 
-  // ========================================================
-  // SERVER WELCOME
-  // ========================================================
+      addMessage(
+        "Connected to multiplayer server.",
+        "system"
+      );
 
-  socket.on("welcome", (data) => {
 
-    console.log(
-      "Server welcome:",
-      data
-    );
-
-    // Use the verified server username
-    if (data.username) {
-
-      playerName.textContent =
-        `You are ${data.username}`;
+      input.disabled =
+        false;
 
     }
-
-  });
-
-
-  // ========================================================
-  // PLAYER COUNT
-  // ========================================================
-
-  socket.on("user_count", (count) => {
-
-    userCount.textContent = count;
-
-  });
+  );
 
 
-  // ========================================================
+  // ==========================================================
+  // WELCOME
+  // ==========================================================
+
+  socket.on(
+    "welcome",
+    (data) => {
+
+      console.log(
+        "Server welcome:",
+        data
+      );
+
+
+      if (data && data.username) {
+
+        playerName.textContent =
+          `You are ${data.username}`;
+
+      }
+
+    }
+  );
+
+
+  // ==========================================================
+  // USER COUNT
+  // ==========================================================
+
+  socket.on(
+    "user_count",
+    (count) => {
+
+      userCount.textContent =
+        count;
+
+    }
+  );
+
+
+  // ==========================================================
   // SYSTEM MESSAGE
-  // ========================================================
+  // ==========================================================
 
-  socket.on("system_message", (message) => {
+  socket.on(
+    "system_message",
+    (message) => {
 
-    addMessage(
-      message,
-      "system"
-    );
+      addMessage(
+        message,
+        "system"
+      );
 
-  });
+    }
+  );
 
 
-  // ========================================================
+  // ==========================================================
   // CHAT MESSAGE
-  // ========================================================
+  // ==========================================================
 
-  socket.on("chat_message", (data) => {
+  socket.on(
+    "chat_message",
+    (data) => {
 
-    addMessage(
-      `${data.username}: ${data.message}`,
-      "chat",
-      data.time
-    );
-
-  });
+      if (!data) {
+        return;
+      }
 
 
-  // ========================================================
-  // SERVER ERROR
-  // ========================================================
+      addMessage(
+        `${data.username}: ${data.message}`,
+        "chat",
+        data.time
+      );
 
-  socket.on("connect_error", (error) => {
-
-    console.error(
-      "Multiplayer connection error:",
-      error
-    );
-
-    addMessage(
-      "Unable to connect to multiplayer server.",
-      "system"
-    );
-
-    input.disabled = true;
-
-  });
+    }
+  );
 
 
-  // ========================================================
+  // ==========================================================
+  // CONNECTION ERROR
+  // ==========================================================
+
+  socket.on(
+    "connect_error",
+    (error) => {
+
+      console.error(
+        "Multiplayer connection error:",
+        error
+      );
+
+
+      input.disabled =
+        true;
+
+
+      addMessage(
+        `Multiplayer connection failed: ${error.message}`,
+        "system"
+      );
+
+    }
+  );
+
+
+  // ==========================================================
   // DISCONNECTED
-  // ========================================================
+  // ==========================================================
 
-  socket.on("disconnect", (reason) => {
+  socket.on(
+    "disconnect",
+    (reason) => {
 
-    console.log(
-      "Disconnected:",
-      reason
-    );
+      console.log(
+        "Disconnected:",
+        reason
+      );
 
-    addMessage(
-      "Disconnected from multiplayer server.",
-      "system"
-    );
 
-    input.disabled = true;
+      input.disabled =
+        true;
 
-  });
+
+      addMessage(
+        "Disconnected from multiplayer server.",
+        "system"
+      );
+
+    }
+  );
 
 }
 
@@ -324,54 +547,83 @@ function connectToMultiplayer(accessToken) {
 // SEND CHAT MESSAGE
 // ============================================================
 
-form.addEventListener("submit", (event) => {
+form.addEventListener(
+  "submit",
+  (event) => {
 
-  event.preventDefault();
+    event.preventDefault();
 
 
-  // Make sure Socket.IO is connected
-  if (!socket || !socket.connected) {
+    // --------------------------------------------------------
+    // Check Socket.IO
+    // --------------------------------------------------------
 
-    addMessage(
-      "You are not connected to the multiplayer server.",
-      "system"
+    if (
+      !socket ||
+      !socket.connected
+    ) {
+
+      addMessage(
+        "You are not connected to the multiplayer server.",
+        "system"
+      );
+
+      return;
+    }
+
+
+    // --------------------------------------------------------
+    // Get message
+    // --------------------------------------------------------
+
+    const message =
+      input.value.trim();
+
+
+    if (!message) {
+
+      return;
+
+    }
+
+
+    // --------------------------------------------------------
+    // Limit message length
+    // --------------------------------------------------------
+
+    const cleanMessage =
+      message.substring(
+        0,
+        200
+      );
+
+
+    // --------------------------------------------------------
+    // Send message
+    // --------------------------------------------------------
+
+    socket.emit(
+      "chat_message",
+      cleanMessage
     );
 
-    return;
+
+    // --------------------------------------------------------
+    // Clear input
+    // --------------------------------------------------------
+
+    input.value =
+      "";
+
+
+    input.focus();
 
   }
-
-
-  const message = input.value.trim();
-
-
-  if (!message) {
-    return;
-  }
-
-
-  // Maximum 200 characters
-  const cleanMessage =
-    message.substring(0, 200);
-
-
-  // Send message to server
-  socket.emit(
-    "chat_message",
-    cleanMessage
-  );
-
-
-  // Clear input
-  input.value = "";
-
-  input.focus();
-
-});
+);
 
 
 // ============================================================
-// ADD MESSAGE TO CHAT
+// ADD MESSAGE
 // ============================================================
 
 function addMessage(
@@ -381,14 +633,20 @@ function addMessage(
 ) {
 
   const row =
-    document.createElement("div");
+    document.createElement(
+      "div"
+    );
+
 
   row.className =
     `message ${type}`;
 
 
   const content =
-    document.createElement("span");
+    document.createElement(
+      "span"
+    );
+
 
   // textContent prevents HTML injection
   content.textContent =
@@ -400,13 +658,21 @@ function addMessage(
   );
 
 
+  // ----------------------------------------------------------
+  // Time
+  // ----------------------------------------------------------
+
   if (time) {
 
     const clock =
-      document.createElement("small");
+      document.createElement(
+        "small"
+      );
+
 
     clock.textContent =
       time;
+
 
     row.appendChild(
       clock
@@ -415,66 +681,20 @@ function addMessage(
   }
 
 
+  // ----------------------------------------------------------
+  // Add to chat
+  // ----------------------------------------------------------
+
   messages.appendChild(
     row
   );
 
 
-  // Scroll to newest message
+  // ----------------------------------------------------------
+  // Scroll to bottom
+  // ----------------------------------------------------------
+
   messages.scrollTop =
     messages.scrollHeight;
 
 }
-/*const socket = io();
-
-const messages = document.getElementById("messages");
-const form = document.getElementById("chatForm");
-const input = document.getElementById("messageInput");
-const userCount = document.getElementById("userCount");
-const playerName = document.getElementById("playerName");
-
-socket.on("welcome", (data) => {
-  playerName.textContent = `You are ${data.username}`;
-});
-
-socket.on("user_count", (count) => {
-  userCount.textContent = count;
-});
-
-socket.on("system_message", (message) => {
-  addMessage(message, "system");
-});
-
-socket.on("chat_message", (data) => {
-  addMessage(`${data.username}: ${data.message}`, "chat", data.time);
-});
-
-form.addEventListener("submit", (event) => {
-  event.preventDefault();
-
-  const message = input.value.trim();
-  if (!message) return;
-
-  socket.emit("chat_message", message);
-  input.value = "";
-  input.focus();
-});
-
-function addMessage(text, type, time = "") {
-  const row = document.createElement("div");
-  row.className = `message ${type}`;
-
-  const content = document.createElement("span");
-  content.textContent = text;
-  row.appendChild(content);
-
-  if (time) {
-    const clock = document.createElement("small");
-    clock.textContent = time;
-    row.appendChild(clock);
-  }
-
-  messages.appendChild(row);
-  messages.scrollTop = messages.scrollHeight;
-}
-*/

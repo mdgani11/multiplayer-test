@@ -1,39 +1,157 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Y8 Multiplayer Chat Test</title>
-  <link rel="stylesheet" href="style.css">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>Y8 Multiplayer Chat</title>
+
+  <link
+    rel="stylesheet"
+    href="style.css"
+  >
 </head>
+
 <body>
+
   <main class="game">
+
+    <!-- =====================================================
+         HEADER
+    ====================================================== -->
+
     <header>
+
       <div>
+
         <h1>Multiplayer Chat</h1>
-        <p class="subtitle">Anonymous real-time test</p>
+
+        <p class="subtitle">
+          Y8 Multiplayer Test
+        </p>
+
       </div>
-      <div class="online"><span></span><b id="userCount">0</b> online</div>
+
+
+      <div class="online">
+
+        <span></span>
+
+        <b id="userCount">0</b>
+
+        online
+
+      </div>
+
     </header>
 
-    <section id="messages" class="messages"></section>
 
-    <form id="chatForm" class="input-area">
-      <input id="messageInput" maxlength="200" autocomplete="off"
-             placeholder="Type a message..." />
-      <button type="submit">SEND</button>
+    <!-- =====================================================
+         LOGIN
+    ====================================================== -->
+
+    <div
+      id="loginArea"
+      class="login-area"
+    >
+
+      <p>
+        Please log in to Y8 to join the chat.
+      </p>
+
+      <button
+        id="loginButton"
+        type="button"
+      >
+        LOGIN TO Y8
+      </button>
+
+    </div>
+
+
+    <!-- =====================================================
+         CHAT MESSAGES
+    ====================================================== -->
+
+    <section
+      id="messages"
+      class="messages"
+    ></section>
+
+
+    <!-- =====================================================
+         CHAT INPUT
+    ====================================================== -->
+
+    <form
+      id="chatForm"
+      class="input-area"
+    >
+
+      <input
+        id="messageInput"
+        maxlength="200"
+        autocomplete="off"
+        placeholder="Type a message..."
+        disabled
+      >
+
+      <button
+        type="submit"
+      >
+        SEND
+      </button>
+
     </form>
 
+
+    <!-- =====================================================
+         FOOTER
+    ====================================================== -->
+
     <footer>
-      <span id="playerName">Connecting...</span>
-      <span>Socket.IO multiplayer test</span>
+
+      <span id="playerName">
+        Not logged in
+      </span>
+
+      <span>
+        Y8 Multiplayer Test
+      </span>
+
     </footer>
+
   </main>
+
+
+  <!-- =======================================================
+       Y8 SDK
+  ======================================================== -->
+
   <script
     src="https://cdn.y8.com/minimal-sdk/2-0/y8.min.js"
     async
   ></script>
+
+
+  <!-- =======================================================
+       SOCKET.IO
+  ======================================================== -->
+
   <script src="/socket.io/socket.io.js"></script>
+
+
+  <!-- =======================================================
+       GAME JAVASCRIPT
+  ======================================================== -->
+
   <script src="game.js"></script>
+
 </body>
+
 </html>

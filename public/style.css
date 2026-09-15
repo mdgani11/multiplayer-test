@@ -13,6 +13,33 @@ body {
   color: #fff;
 }
 
+.login-area {
+  padding: 20px;
+  text-align: center;
+  background: #292929;
+  border-bottom: 1px solid #3a3a3a;
+}
+
+.login-area p {
+  margin: 0 0 12px;
+  color: #aaa;
+  font-size: 14px;
+}
+
+.login-area button {
+  padding: 12px 22px;
+  border: 0;
+  border-radius: 8px;
+  background: #f5a623;
+  color: #171717;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.login-area button:hover {
+  filter: brightness(1.08);
+}
+
 .game {
   width: min(720px, 94vw);
   height: min(720px, 90vh);
@@ -158,3 +185,5 @@ footer {
     padding: 0 14px;
   }
 }
+
+
